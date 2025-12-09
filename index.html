@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WDD330 Final Project">
+    <meta name="author" content="Jelina Alexandrine Concha">
+
+    <title> Plant Pal Tracker Project </title>
+
+    <meta property="og:title" content="Plant Pal">
+    <meta property="og:description" content="Website to track your plants and their watering schedule.">
+    <meta property="og:image" content="">
+    <meta property="og:url" content="">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles/desktop.css">
+    <link rel="stylesheet" href="styles/mobile.css">
+
+    <script type="module" src="scripts/firebase-login.js"></script>
+
+    <link rel="icon" href="images/favicon.ico">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="images/Plant-Pal-Logo.png" alt="home-logo" loading="lazy" width="512" height="512">
+        </div>
+
+        <h1> Plant Pal </h1>
+        <p> Your Personal Plant Care Companion </p>
+
+        <div class="login-area">
+            <span class="login-status">Not Logged-In</span>
+            <button class="login-btn">Login</button>
+        </div>
+    </header>
+
+    <nav>
+        <ul class="navigation">
+            <li class="current"><a href="index.html"> Dashboard </a></li>
+            <li><a href="my-plants.html"> My Plants </a></li>
+            <li><a href="identify.html"> Identify Plants </a></li>
+            <li><a href="care-task.html"> Care Tasks </a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="dashboard-intro">
+            <section id="total-plants">
+                <h2> Total Plants </h2>
+                <!-- js works here -->
+            </section>
+
+            <section id="watering-today">
+                <h2> Watering Today </h2>
+                <!-- js works here -->
+            </section>
+
+            <section id="fertilizing-plants">
+                <h2> Fertilizing Today </h2>
+                <!-- js works here -->
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-info">
+            <div class="info">
+                <p>WDD330 Plant Pal &copy;<span id="currentyear"></span></p>
+                <p>By Jelina Alexandrine Concha</p>
+            </div>
+
+            <div class="social">
+                <a href="#" target="_blank"><img src="images/facebook.svg" loading="lazy" alt="facebook" width="16"
+                        height="16"></a>
+                <a href="#" target="_blank"><img src="images/discord.svg" alt="facebook" loading="lazy" width="16"
+                        height="16"></a>
+                <a href="#" target="_blank"><img src="images/twitter-alt-circle.svg" loading="lazy" alt="linkedin"
+                        width="16" height="16"></a>
+            </div>
+        </div>
+    </footer>
+
+</html>
