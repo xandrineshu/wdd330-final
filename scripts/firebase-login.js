@@ -1,7 +1,23 @@
+// ---------------------------------------------------
+// FIREBASE IMPORTS
+// ---------------------------------------------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-analytics.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    updateProfile,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js";
 
+import {
+    getFirestore
+} from "https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js";
+
+// ---------------------------------------------------
+// FIREBASE CONFIG
+// ---------------------------------------------------
 const firebaseConfig = {
     apiKey: "AIzaSyCw0CHDegmQI10QgPyk6-foE30d7p4d5eY",
     authDomain: "plant-pal-tracker.firebaseapp.com",
@@ -11,11 +27,17 @@ const firebaseConfig = {
     appId: "1:930244000698:web:5bad4ef9f41675c9803b83",
     measurementId: "G-G2MY3RLLEG"
 };
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
 
-// Simple login modal
+// ---------------------------------------------------
+// INITIALIZE FIREBASE
+// ---------------------------------------------------
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ---------------------------------------------------
+// LOGIN MODAL UI
+// ---------------------------------------------------
 function showLoginModal() {
     let modal = document.getElementById('login-modal');
     if (!modal) {
@@ -52,38 +74,46 @@ function showLoginModal() {
             </div>
         `;
         document.body.appendChild(modal);
-        document.getElementById('login-close').onclick = () => { modal.remove(); };
-        // Tab switching
+
+        document.getElementById('login-close').onclick = () => modal.remove();
+
         document.getElementById('tab-login').onclick = () => {
             document.getElementById('login-form').style.display = '';
             document.getElementById('signup-form').style.display = 'none';
         };
+
         document.getElementById('tab-signup').onclick = () => {
             document.getElementById('login-form').style.display = 'none';
             document.getElementById('signup-form').style.display = '';
         };
-        // Login
+
+        // LOGIN
         document.getElementById('login-submit').onclick = async () => {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
+
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 modal.remove();
             } catch (err) {
                 let msg = err.message;
-                if (err.code === 'auth/user-not-found') {
-                    msg = "It looks like you don't have an account yet! Please sign up first!";
+                if (err.code === "auth/invalid-credential") {
+                    msg = "Incorrect email or password.";
+                }
+                if (err.code === "auth/user-not-found") {
+                    msg = "No account found. Please sign up!";
                 }
                 document.getElementById('login-error').textContent = msg;
             }
         };
-        // Sign Up
+
+        // SIGNUP
         document.getElementById('signup-submit').onclick = async () => {
             const name = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
+
             try {
-                const { createUserWithEmailAndPassword, updateProfile } = await import('https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js');
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 await updateProfile(userCredential.user, { displayName: name });
                 modal.remove();
@@ -94,28 +124,33 @@ function showLoginModal() {
     }
 }
 
-// Login button event
+// Open login modal
 const loginBtn = document.querySelector('.login-btn');
 if (loginBtn) {
     loginBtn.addEventListener('click', showLoginModal);
 }
 
-// Auth state change
+// Update header login status
 const loginStatus = document.querySelector('.login-status');
+
 onAuthStateChanged(auth, user => {
     if (user) {
-        // Show user info in header
-        let info = `${user.displayName ? user.displayName : ''} (${user.email})`;
+        let info = `${user.displayName ? user.displayName : ""} (${user.email})`;
         if (loginStatus) loginStatus.textContent = `Logged in as ${info}`;
         if (loginBtn) {
-            loginBtn.textContent = 'Logout';
+            loginBtn.textContent = "Logout";
             loginBtn.onclick = () => signOut(auth);
         }
     } else {
-        if (loginStatus) loginStatus.textContent = 'Not Logged-In';
+        if (loginStatus) loginStatus.textContent = "Not Logged-In";
         if (loginBtn) {
-            loginBtn.textContent = 'Login';
+            loginBtn.textContent = "Login";
             loginBtn.onclick = showLoginModal;
         }
     }
 });
+
+// ---------------------------------------------------
+// EXPORTS — REQUIRED FOR OTHER FILES
+// ---------------------------------------------------
+export { auth, db, app };
