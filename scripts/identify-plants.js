@@ -1,101 +1,97 @@
-// =========================
-// Identify Plants (Client)
-// =========================
+// identify-plants.js — FINAL VERSION
 
-// Local proxy endpoint (NOT PlantNet directly — avoids CORS)
-const PROXY_URL = "http://localhost:5050/identify-plants";
+console.log("🌿 identify-plants.js loaded");
 
-// Select elements
+// ================================
+// DOM Elements
+// ================================
 const fileInput = document.getElementById("plant-image");
-const identifyBtn = document.getElementById("identify-btn");
 const previewContainer = document.getElementById("preview-container");
 const previewImg = document.getElementById("preview-img");
+const identifyBtn = document.getElementById("identify-btn");
 const resultsContainer = document.getElementById("results-container");
 
-let uploadedImageFile = null;
-
-// -------------------------
-// Image Preview
-// -------------------------
+// ================================
+// Show Preview on File Select
+// ================================
 fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     if (!file) return;
 
-    uploadedImageFile = file;
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-        previewImg.src = e.target.result;
-        previewContainer.style.display = "block";
-    };
-
-    reader.readAsDataURL(file);
+    previewImg.src = URL.createObjectURL(file);
+    previewContainer.style.display = "block";
 });
 
-// -------------------------
-// Identify Plant
-// -------------------------
+// ================================
+// Identify Plant Button Click
+// ================================
 identifyBtn.addEventListener("click", async () => {
-    resultsContainer.innerHTML = "";
+    const file = fileInput.files[0];
 
-    if (!uploadedImageFile) {
-        resultsContainer.innerHTML = `<p>Please upload an image first.</p>`;
+    if (!file) {
+        alert("Please upload an image first.");
         return;
     }
 
+    console.log("📸 Preparing image for upload:", file.name);
+
+    const formData = new FormData();
+    formData.append("image", file); // IMPORTANT: must match server.js field name
+
     try {
-        const formData = new FormData();
-        formData.append("images", uploadedImageFile, uploadedImageFile.name);
-        formData.append("organs", "leaf");
-        // Removed 'include-related-images' as it's optional and not needed for core functionality
+        console.log("📤 Sending to server...");
 
-        resultsContainer.innerHTML = `<p>Identifying plant... Please wait.</p>`;
-
-        // Send request to local proxy
-        const response = await fetch(PROXY_URL, {
+        // ⭐ MATCHES server.js route EXACTLY
+        const response = await fetch("http://localhost:3100/identify-plants", {
             method: "POST",
             body: formData
         });
 
-        // Read raw text for debugging or JSON
-        const rawText = await response.text();
+        const text = await response.text();
+
+        console.log("📥 Raw server response:", text);
+
+        // If PlantNet returned HTML → error
+        if (text.startsWith("<")) {
+            throw new Error("Server returned HTML error page.");
+        }
+
+        const data = JSON.parse(text);
 
         if (!response.ok) {
-            console.error("⚠ PlantNet/raw error text:", rawText);
-            // This is the error seen in your image. It should now return the PlantNet error.
-            throw new Error("PlantNet returned error " + response.status + " — " + rawText);
+            throw new Error("PlantNet returned error " + response.status + " — " + text);
         }
 
-        let data;
-        try {
-            data = JSON.parse(rawText);
-        } catch (err) {
-            console.error("JSON parse error:", rawText);
-            throw new Error("Invalid JSON returned by server.");
-        }
+        displayResults(data);
 
-        // -------------------------
-        // Display results
-        // --------------------------
-        if (!data.results || data.results.length === 0) {
-            resultsContainer.innerHTML = `<p>No plant identified. Try a clearer image.</p>`;
-            return;
-        }
-
-        const best = data.results[0];
-        const name = best.species?.scientificName || "Unknown";
-        const score = Math.round(best.score * 100);
-
+    } catch (err) {
+        console.error("❌ Identification error:", err);
         resultsContainer.innerHTML = `
-            <div class="identified-plant-result">
-                <h3>Result:</h3>
-                <p><strong>${name}</strong></p>
-                <p>Confidence: ${score}%</p>
-            </div>
+            <p style="color: red;">Error identifying plant. Check console for details.</p>
         `;
-
-    } catch (error) {
-        console.error("Identification error:", error);
-        resultsContainer.innerHTML = `<p>Error identifying plant. Check console for details.</p>`;
     }
 });
+
+// ================================
+// Display Results from PlantNet API
+// ================================
+function displayResults(data) {
+    console.log("🌿 Parsed identification data:", data);
+
+    if (!data || !data.results || data.results.length === 0) {
+        resultsContainer.innerHTML = `<p>No plant identified. Try another image.</p>`;
+        return;
+    }
+
+    const best = data.results[0];
+    const species = best.species;
+
+    resultsContainer.innerHTML = `
+        <h3>Best Match: ${species.scientificName}</h3>
+        <p><strong>Common Names:</strong> ${species.commonNames.join(", ")}</p>
+        <p><strong>Confidence:</strong> ${(best.score * 100).toFixed(2)}%</p>
+        
+        <h4>Images</h4>
+        <img src="${best.images[0].url}" style="max-width:200px; border-radius:8px;">
+    `;
+}
