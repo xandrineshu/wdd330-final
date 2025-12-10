@@ -2,40 +2,34 @@
 <html lang="en">
 
 <head>
-    <!-- Basic Metadata -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Plant Pal Tracker</title>
-    <meta name="description" content="Track your plants and their watering schedule.">
-    <meta name="author" content="Jelina Alexandrine Concha">
 
-    <!-- Social Metadata -->
-    <meta property="og:title" content="Plant Pal">
-    <meta property="og:description" content="Your personal plant care companion.">
-    <meta property="og:image" content="">
-    <meta property="og:url" content="">
+    <!-- Metadata -->
+    <meta name="description" content="Identify plants and manage your plant collection.">
+    <meta name="author" content="Jelina Alexandrine Concha">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 
-    <!-- Stylesheets -->
+    <!-- Styles -->
     <link rel="stylesheet" href="styles/desktop.css">
     <link rel="stylesheet" href="styles/mobile.css">
 
-    <!-- Script -->
+    <!-- Firebase Login -->
     <script type="module" src="scripts/firebase-login.js"></script>
 
-    <!-- Favicon -->
     <link rel="icon" href="images/favicon.ico">
 </head>
 
 <body>
+    <!-- HEADER -->
     <header>
         <div class="logo">
-            <img src="images/Plant-Pal-Logo.png" alt="Plant Pal logo" loading="lazy" width="512" height="512">
+            <img src="images/Plant-Pal-Logo.png" alt="Plant Pal logo" width="512" height="512" loading="lazy">
         </div>
 
         <h1>Plant Pal</h1>
@@ -47,15 +41,17 @@
         </div>
     </header>
 
+    <!-- NAVIGATION -->
     <nav>
         <ul class="navigation">
-            <li class="current"><a href="index.html">Dashboard</a></li>
+            <li><a href="index.html">Dashboard</a></li>
             <li><a href="my-plants.html">My Plants</a></li>
-            <li><a href="identify.html">Identify Plants</a></li>
+            <li class="current"><a href="identify.html">Identify Plants</a></li>
             <li><a href="care-task.html">Care Tasks</a></li>
         </ul>
     </nav>
 
+    <!-- MAIN CONTENT -->
     <main>
         <section class="identify-plants">
             <h2>Identify Plants</h2>
@@ -65,45 +61,33 @@
                 <button id="identify-btn">Identify Plant</button>
             </div>
         
-            <!-- Preview -->
-            <div id="preview-container" style="margin-top: 1rem; display:none;">
-                <h3>Image Preview:</h3>
+            <div id="preview-container" style="display:none; margin-top:1rem;">
+                <h3>Image Preview</h3>
                 <img id="preview-img" style="max-width:250px; border-radius:8px;">
             </div>
         
-            <!-- Results -->
             <div id="results-container" style="margin-top:2rem;"></div>
         </section>
-
     </main>
 
+    <!-- FOOTER -->
     <footer>
         <div class="footer-info">
-
             <div class="info">
                 <p>WDD330 Plant Pal &copy;<span id="currentyear"></span></p>
                 <p>By Jelina Alexandrine Concha</p>
             </div>
 
             <div class="social">
-                <a href="#" target="_blank">
-                    <img src="images/facebook.svg" loading="lazy" alt="Facebook" width="16" height="16">
-                </a>
-
-                <a href="#" target="_blank">
-                    <img src="images/discord.svg" loading="lazy" alt="Discord" width="16" height="16">
-                </a>
-
-                <a href="#" target="_blank">
-                    <img src="images/twitter-alt-circle.svg" loading="lazy" alt="Twitter" width="16" height="16">
-                </a>
+                <a href="#"><img src="images/facebook.svg" width="16" height="16" alt="Facebook"></a>
+                <a href="#"><img src="images/discord.svg" width="16" height="16" alt="Discord"></a>
+                <a href="#"><img src="images/twitter-alt-circle.svg" width="16" height="16" alt="Twitter"></a>
             </div>
-
         </div>
     </footer>
 
+    <!-- Identify Plants JS -->
     <script type="module" src="scripts/identify-plants.js"></script>
-    <script type="module" src="scripts/server.js"></script>
 </body>
 
 </html>
