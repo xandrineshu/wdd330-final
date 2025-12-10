@@ -3,7 +3,7 @@
 // =========================
 
 // Local proxy endpoint (NOT PlantNet directly — avoids CORS)
-const PROXY_URL = "http://localhost:3100/identify";
+const PROXY_URL = "http://localhost:5050/identify-plants";
 
 // Select elements
 const fileInput = document.getElementById("plant-image");

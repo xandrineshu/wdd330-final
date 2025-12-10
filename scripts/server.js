@@ -1,39 +1,47 @@
+// 🔥 Confirm the server file actually loads
+console.log("🔥 SERVER FILE LOADED");
+
 import express from "express";
 import multer from "multer";
 import fetch from "node-fetch";
 import FormData from "form-data";
 import cors from "cors";
 
+// Init express
 const app = express();
-const upload = multer();
-
 app.use(cors());
 
-// server.js
-// ... imports and setup
+// Multer for file upload (memory storage)
+const upload = multer();
+
+// Your API key
 const API_KEY = "2b105qRcVdoYpbjT6VjGbS2Qe";
 
-// 🔥 CRITICAL FIX: Add &api-version=1 to the URL
-const PLANTNET_URL = `https://api.plantnet.org/v1/identify?api-key=${API_KEY}&api-version=1`;
+// The correct PlantNet endpoint
+const PLANTNET_URL = `https://my-api.plantnet.org/v1/identify?api-key=${API_KEY}`;
 
-// ... rest of the code
-// ... ensure you restart your server after this change
+console.log("🌱 Using PlantNet URL:", PLANTNET_URL);
 
+// -------------------------------
+// IDENTIFY ROUTE
+// -------------------------------
 app.post("/identify", upload.single("images"), async (req, res) => {
+
+    console.log("🔥 /identify route HIT");
+
     try {
-        // Removed redundant inner try/catch block for cleaner structure
         if (!req.file) {
+            console.log("❌ No file received");
             return res.status(400).json({ error: "No image uploaded" });
         }
+
+        console.log("📸 File received:", req.file.originalname, req.file.mimetype, req.file.size);
 
         const form = new FormData();
         form.append("images", req.file.buffer, req.file.originalname);
         form.append("organs", "leaf");
 
-        // Debug: log outgoing request
-        console.log("Sending request to PlantNet:", PLANTNET_URL);
-        console.log("Headers:", form.getHeaders());
-        console.log("Uploaded file name:", req.file.originalname);
+        console.log("📤 Sending image to PlantNet...");
 
         const plantRes = await fetch(PLANTNET_URL, {
             method: "POST",
@@ -41,23 +49,22 @@ app.post("/identify", upload.single("images"), async (req, res) => {
             headers: form.getHeaders()
         });
 
-        const text = await plantRes.text();
-        // Debug: log response
-        console.log("PlantNet response status:", plantRes.status);
-        console.log("PlantNet response body:", text);
+        const rawText = await plantRes.text();
 
-        // Send the raw text back, including status code,
-        // which the client side will handle.
-        res.status(plantRes.status).send(text);
+        console.log("📥 PlantNet responded with status:", plantRes.status);
+
+        res.status(plantRes.status).send(rawText);
+
     } catch (err) {
-        console.error("Proxy server error:", err);
-        // Ensure to send a JSON response on 500 server error
-        res.status(500).json({ error: "Proxy server error", detail: err.message });
+        console.error("💥 Proxy server error:", err);
+        res.status(500).json({ error: "Server error", detail: err.message });
     }
 });
 
-// Add a port listener so the server starts
-const PORT = 3100;
+// -------------------------------
+// START SERVER
+// -------------------------------
+const PORT = 5050;
 app.listen(PORT, () => {
-    console.log(`Proxy server running on http://localhost:${PORT}`);
+    console.log(`🚀 Proxy server running at http://localhost:${PORT}`);
 });
